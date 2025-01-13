@@ -10,6 +10,10 @@ export default {
   ],
   theme: {
   	extend: {
+			boxShadow: {
+				slate: '0 0 0 4px rgba(16, 16, 16, 0.75)',
+				error: '0 0 0 4px rgba(248, 113, 113, 0.75)',	
+			},
   		colors: {
   			background: 'hsl(var(--background))',
   			foreground: 'hsl(var(--foreground))',
