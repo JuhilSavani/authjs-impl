@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import FormResponseProvider from "@/lib/providers/FormResponseProvider";
 
 export const metadata: Metadata = {
   title: "Authjs Impl",
@@ -12,7 +13,9 @@ export default function RootLayout(
   return (
     <html lang="en">
       <body className={`antialiased`}>
+      <FormResponseProvider>
         {children}
+      </FormResponseProvider>
       </body>
     </html>
   );
