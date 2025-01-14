@@ -94,3 +94,12 @@
 .form-control.invalid p {
   @apply mt-1 ml-1 text-red-500
 }
+
+.disabled-field {
+  @apply
+  py-1 px-2 mb-2 
+  text-left rounded-md 
+  border-4 border-[rgba(16,16,16,0.75)] 
+  transition-all duration-200 
+  hover:cursor-not-allowed hover:opacity-80
+}
