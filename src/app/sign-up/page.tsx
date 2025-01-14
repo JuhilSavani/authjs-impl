@@ -6,7 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
 import { Socials } from "@/components/Socials";
 import { SignUpSchema } from "@/lib/schemas";
-import { SignUpCredentials } from "@/types";
+import { SignUpCredentials } from "@types";
 
 export default function SignUpPage() {
   const form = useForm<SignUpCredentials>({
@@ -20,7 +20,7 @@ export default function SignUpPage() {
       \n ${JSON.stringify(formData, null, 2)} \n
     `);
   }
-  
+
   return (
     <div className="grid place-items-center">
       <div className="my-20 p-8 bg-background text-foreground rounded-md shadow-lg max-w-lg w-full">

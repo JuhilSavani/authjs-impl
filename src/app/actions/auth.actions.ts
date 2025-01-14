@@ -1,5 +1,7 @@
 "use server"
 
+import { SignInCredentials, SignUpCredentials } from "@types";
+
 // TODO: complete the implementation of these actions
 
 export async function login(credentials: SignInCredentials){

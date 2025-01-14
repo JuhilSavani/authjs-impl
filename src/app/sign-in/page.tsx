@@ -6,7 +6,7 @@ import { Socials } from "@/components/Socials";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { SignInSchema } from "@/lib/schemas";
-import { SignInCredentials } from "@/types";
+import { SignInCredentials } from "@types";
 
 export default function SignInPage() {
   const form = useForm<SignInCredentials>({
@@ -61,7 +61,7 @@ export default function SignInPage() {
             </div>
 
             <Button type="submit" size="lg" className="w-full mt-2">
-              continue 
+              continue
             </Button>
           </form>
         </section>
