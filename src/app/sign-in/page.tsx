@@ -7,6 +7,8 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { SignInSchema } from "@/lib/schemas";
 import { SignInCredentials } from "@types";
+import { useFormResponse } from "@/lib/providers/FormResponseProvider";
+import { useRouter } from "next/navigation";
 
 export default function SignInPage() {
   const form = useForm<SignInCredentials>({
@@ -15,10 +17,15 @@ export default function SignInPage() {
   const { register, handleSubmit, formState } = form;
   const { errors } = formState;
 
+  const router = useRouter();
+  const { setFormResponse } = useFormResponse();
+
   async function submitHandler(formData: SignInCredentials) {
     console.log(`submitted signin form with: 
       \n ${JSON.stringify(formData, null, 2)} \n
     `);
+    setFormResponse(formData);
+    router.push(`verify/${formData.email}`)
   }
 
   return (

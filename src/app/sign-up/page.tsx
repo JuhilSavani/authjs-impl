@@ -7,6 +7,8 @@ import { Button } from "@/components/ui/button";
 import { Socials } from "@/components/Socials";
 import { SignUpSchema } from "@/lib/schemas";
 import { SignUpCredentials } from "@types";
+import { useFormResponse } from "@/lib/providers/FormResponseProvider";
+import { useRouter } from "next/navigation";
 
 export default function SignUpPage() {
   const form = useForm<SignUpCredentials>({
@@ -15,10 +17,15 @@ export default function SignUpPage() {
   const { register, handleSubmit, formState } = form;
   const { errors } = formState;
 
+   const router = useRouter();
+  const { setFormResponse } = useFormResponse();
+
   async function submitHandler(formData: SignUpCredentials) {
     console.log(`submitted signup form with: 
       \n ${JSON.stringify(formData, null, 2)} \n
     `);
+    setFormResponse(formData);
+    router.push(`verify/${formData.email}`) 
   }
 
   return (
