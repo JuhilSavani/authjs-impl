@@ -25,7 +25,7 @@ export default function SignInPage() {
       \n ${JSON.stringify(formData, null, 2)} \n
     `);
     setFormResponse(formData);
-    router.push(`verify/${formData.email}`)
+    router.push(`email-verification/?referrer=sign-in`)
   }
 
   return (
