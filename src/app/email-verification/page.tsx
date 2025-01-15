@@ -1,36 +1,52 @@
 "use client";
 
-import { use, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useFormResponse } from "@/lib/providers/FormResponseProvider";
 import { Button } from "@/components/ui/button";
 import { MdEmail } from 'react-icons/md';
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
+import { getTokenAndSendEmail } from "@/app/actions/verification.actions";
 
-function EmailVerificationPage(
-  { params }: { params: Promise<{ email: string }> }
-) {
-  const resolvedParams = use(params);
-  const { email } = resolvedParams;
+function EmailVerificationPage() {
+  const searchParams = useSearchParams();
+  const referrer = searchParams.get("referrer") || "Unknown";
 
   const { formResponse } = useFormResponse();
 
   const router = useRouter();
 
-  useEffect(() => {
-    // TODO: get the verification token from the backend
-    if(!formResponse?.email) router.back() // TODO: alert "Please, make sure that you have filled the sign in form before verifying your email!"
-  }, [formResponse, router]);
-
   const [token, setToken] = useState<string>("");
-  const [isVerified, setIsVerified] = useState<boolean | null>(null);
+
+  const fetchEmailVerificationToken = useCallback( async () => {
+    const token = await getTokenAndSendEmail(formResponse?.email);
+    setToken(token);
+    alert("Confirmation mail sent successfully!");
+  }, [formResponse?.email]);
+  
+  useEffect(() => {
+    if(referrer=="Unknown") router.back();
+    if(!formResponse?.email){
+      alert("Please, make sure that you have filled the sign in form before verifying your email!");
+      router.back();
+    }
+    fetchEmailVerificationToken(); 
+  }, [referrer, fetchEmailVerificationToken, formResponse, router]);
 
   const inputRef = useRef<HTMLInputElement | null>(null);
 
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
-    // TODO: compare the verification token here
+    if (inputRef.current && token === inputRef.current.value) {
+      // TODO: authorize the user using form response data
+      router.push('/');
+    }
   };
 
+  const handleClick = async (event: React.FormEvent) => {
+    event.preventDefault();
+    await fetchEmailVerificationToken();
+  }
+  
   return (
     <div className="h-screen grid place-items-center">
       <div className="p-8 bg-background text-foreground rounded-md shadow-lg max-w-md w-full">
@@ -38,7 +54,7 @@ function EmailVerificationPage(
           <MdEmail className="text-[8rem] mx-auto"/>
           <h2 className="text-3xl font-bold mb-2">Email Verification</h2>
           <p className="text-left font-semibold mb-0.5">Verify the email address:</p>
-          <p className="disabled-field">{decodeURIComponent(email)}</p>  
+          <p className="disabled-field">{decodeURIComponent(formResponse?.email)}</p>  
           <p>Please check your inbox for a verification email.</p> 
           <p>If you haven&apos;t received it, you can request a new one.</p>
         </section>
@@ -54,13 +70,13 @@ function EmailVerificationPage(
                   placeholder="e.g. 123456"
                   ref={inputRef}
                 />
-                <Button size="lg" className="w-[82px] ml-3">
+                <Button size="lg" className="w-[82px] ml-3" onClick={handleClick}>
                   resend
                 </Button>
               </div>
             </div>
             <Button type="submit" size="lg" className="w-full">
-              continue
+              continue with {referrer}
             </Button>
           </form>
         </section>
