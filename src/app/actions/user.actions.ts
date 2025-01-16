@@ -1,31 +1,31 @@
 "use server"
 
-import { db } from '@/db/index'; 
-import { users } from '@/db/models'; 
-import { eq } from 'drizzle-orm';
-
-export async function getUserById(id: string){
-  try {
-    const result = await db.select().from(users).where(eq(users.id, id));
-    if (!result || result.length === 0) {
-      return { ok: false, message: 'Account is not available over the provided details', user: null };
-    }
-    return { ok: true, message: 'Accoun found successfully' , user: result[0] };
-  } catch (error) {
-    console.error('Error fetching user:', error);
-    return { ok: false, message: 'An error occurred while fetching the account detail', user: null };
-  }
-}
+const baseUrl = `http://localhost:3000`;
 
 export async function getUserByEmail(email: string){
   try {
-    const result = await db.select().from(users).where(eq(users.email, email));
-    if (!result || result.length === 0) {
-      return { ok: false, message: 'User not found', user: null };
-    }
-    return { ok: true, message: 'Account found successfully', user: result[0] };
+    const result = await fetch(`${baseUrl}/api/user/${email}`);
+    const { message, user } = await result.json();
+    if (result.ok) return { ok: true, message, user };
+    return { ok: false, message, user };
   } catch (error) {
-    console.error('Error fetching user:', error);
-    return { ok: false, message: 'An error occurred while fetching the account detail', user: email };
+    console.error('[user.actions][Error fetching user by email]:', error);
+    return { ok: false, message: error instanceof Error ? error.message : 'An error occurred while fetching the account detail', user: null };
+  }
+}
+
+export async function updateUserPassword(email: string, newPassword: string) {
+  try {
+    const response = await fetch(`${baseUrl}/api/user/update/password`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, newPassword }),
+    });
+    const { message } = await response.json();
+    if(response.ok) return { ok: true, message };
+    return { ok: false, message };
+  } catch (error) {
+    console.error('[user.actions][Error in updating the password]:', error);
+    return { ok: false, message: error instanceof Error ? error.message : 'Unexpected error occurred while updating the password!' };
   }
 }
