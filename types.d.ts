@@ -1,5 +1,3 @@
-// TODO: complete the implementation of these types
-
 import { z } from 'zod';
 import { SignInSchema } from '@/lib/schemas';
 import { SignUpSchema } from '@/lib/schemas';
