@@ -9,6 +9,7 @@ import { SignUpSchema } from "@/lib/schemas";
 import { SignUpCredentials } from "@types";
 import { useFormResponse } from "@/lib/providers/FormResponseProvider";
 import { useRouter } from "next/navigation";
+import { getUserByEmail } from "@/app/actions/user.actions";
 
 export default function SignUpPage() {
   const form = useForm<SignUpCredentials>({
@@ -21,9 +22,13 @@ export default function SignUpPage() {
   const { setFormResponse } = useFormResponse();
 
   async function submitHandler(formData: SignUpCredentials) {
-    console.log(`submitted signup form with: 
-      \n ${JSON.stringify(formData, null, 2)} \n
-    `);
+    const getUserResult = await getUserByEmail(formData.email);
+  
+    if (getUserResult.ok) {
+      alert("Email is already in use, please enter another email!");
+      return;
+    } 
+    
     setFormResponse(formData);
     router.push(`email-verification/?referrer=sign-up`)
   }
