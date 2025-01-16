@@ -10,8 +10,8 @@ export async function middleware(request: NextRequest) {
 
   // Allow certain routes to bypass authentication
   if (
-    url.pathname.startsWith("/api/auth/") 
-    || url.pathname.startsWith("/api/user/")
+    url.pathname.startsWith("/api/auth") ||
+    url.pathname.startsWith("/api/user")
   ) return NextResponse.next();
 
   // Check if the user is logged in
