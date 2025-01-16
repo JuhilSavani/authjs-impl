@@ -3,11 +3,18 @@
 import { Button } from "@/components/ui/button";
 import { FcGoogle } from "react-icons/fc";
 import { FaGithub } from "react-icons/fa";
+import { signIn } from "next-auth/react";
+import { AuthError } from "next-auth";
 
 export const Socials = () => {
 
   async function handleClick(provider: "google" | "github") {
-    console.log(`\n called handleClick(${provider}) \n`);
+    console.log(`\n handleClick(${provider}) \n`);
+    try {
+      await signIn(provider, { redirectTo: '/' });
+    } catch (error) {
+      if(error instanceof AuthError) alert(error.message);
+    }
   }
   
   return (
