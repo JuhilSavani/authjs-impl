@@ -5,7 +5,11 @@ import { useFormResponse } from "@/lib/providers/FormResponseProvider";
 import { Button } from "@/components/ui/button";
 import { MdEmail } from 'react-icons/md';
 import { useRouter, useSearchParams } from "next/navigation";
+import { SignInSchema, SignUpSchema } from "@/lib/schemas";
+import { SignInCredentials, SignUpCredentials } from "@types";
+import { updateUserPassword } from "@/app/actions/user.actions";
 import { getTokenAndSendEmail } from "@/app/actions/verification.actions";
+import { login, register } from "@/app/actions/auth.actions";
 
 function EmailVerificationPage() {
   const searchParams = useSearchParams();
@@ -34,11 +38,28 @@ function EmailVerificationPage() {
 
   const inputRef = useRef<HTMLInputElement | null>(null);
 
-  const handleSubmit = (event: React.FormEvent) => {
+  const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
-    if (inputRef.current && token === inputRef.current.value) {
-      // TODO: authorize the user using form response data
-      router.push('/');
+    try { 
+      if (inputRef.current && token === inputRef.current.value) {
+        if (referrer === "sign-in") {
+          const credentials: SignInCredentials = await SignInSchema.parseAsync(formResponse);
+          await updateUserPassword(credentials.email, credentials.password);
+          const loginResult = await login(credentials);
+          alert(loginResult.message);
+          if (!loginResult.ok) return;
+        } else {
+          const credentials: SignUpCredentials = await SignUpSchema.parseAsync(formResponse);
+          const registerResult = await register({ credentials, isEmailVerified: true });
+          alert(registerResult.message);
+          if(!registerResult.ok) return;
+        }
+        router.push('/');
+      } else alert("Invalid verification token, please try again!");
+    } catch (error) {
+      if(error instanceof Error) alert(error.message);
+      alert(`Unexpected error occured on ${referrer}!`);
+      console.error(error);
     }
   };
 
