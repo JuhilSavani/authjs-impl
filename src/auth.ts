@@ -1,6 +1,7 @@
 import NextAuth from "next-auth"
 import authConfig from "@auth.config"
- 
+import { getUserByEmail, saveUserDetails } from "@/app/actions/user.actions";
+
 const TOKEN_EXPIRY = 60 * 60;
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
@@ -14,6 +15,25 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     // updateAge: <number>,
   },
   callbacks: {
+    async signIn({ user, account }) {
+      if (["google", "github"].includes(account?.provider as string)) {
+        const [firstName, lastName] = (user?.name?.split(' ') ?? ["", ""]);
+        try {
+          const getUserResult = await getUserByEmail(user?.email as string);
+          if (!getUserResult.ok) {
+            const saveUserResult = await saveUserDetails({
+              firstName,
+              lastName,
+              email: user?.email as string,
+              isVerified: true,
+              provider: account?.provider as "google" | "github",
+            });
+            if(saveUserResult.ok) return true;
+          }
+        } catch { return false; }
+      }
+      return true;
+    },
     async jwt({ token, user }) {
       const now = Math.floor(Date.now() / 1000);
 
