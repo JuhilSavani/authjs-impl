@@ -91,6 +91,6 @@
 // }
 
 export async function getTokenAndSendEmail(email: string) {
-  console.log(`called verifyEmail(${email})`);
+  console.log(`\ncalled verifyEmail(${email})\n`);
   return "123456"
 }
