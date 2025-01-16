@@ -9,6 +9,8 @@ import { SignInSchema } from "@/lib/schemas";
 import { SignInCredentials } from "@types";
 import { useFormResponse } from "@/lib/providers/FormResponseProvider";
 import { useRouter } from "next/navigation";
+import { getUserByEmail } from "@/app/actions/user.actions";
+import { login } from "@/app/actions/auth.actions";
 
 export default function SignInPage() {
   const form = useForm<SignInCredentials>({
@@ -21,11 +23,21 @@ export default function SignInPage() {
   const { setFormResponse } = useFormResponse();
 
   async function submitHandler(formData: SignInCredentials) {
-    console.log(`submitted signin form with: 
-      \n ${JSON.stringify(formData, null, 2)} \n
-    `);
-    setFormResponse(formData);
-    router.push(`email-verification/?referrer=sign-in`)
+    const getUserResult = await getUserByEmail(formData.email);
+
+    if (getUserResult.ok) {
+      if(getUserResult.user!.provider === "credentials" && getUserResult.user!.isVerified){
+        const loginResult = await login(formData);
+        alert(loginResult.message);
+        if(loginResult.ok) {
+          router.push('/');
+          return;
+        }
+        return;
+      }
+      setFormResponse(formData);
+      router.push(`email-verification/?referrer=sign-in`)
+    } else alert(getUserResult.message);
   }
 
   return (
