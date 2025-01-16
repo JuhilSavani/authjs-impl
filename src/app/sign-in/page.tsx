@@ -26,7 +26,10 @@ export default function SignInPage() {
     const getUserResult = await getUserByEmail(formData.email);
 
     if (getUserResult.ok) {
-      if(getUserResult.user!.provider === "credentials" && getUserResult.user!.isVerified){
+      if(
+        (getUserResult.user!.provider === "credentials" && getUserResult.user!.isVerified) || 
+        (getUserResult.user!.provider !== "credentials" && getUserResult.user!.password)
+      ){
         const loginResult = await login(formData);
         alert(loginResult.message);
         if(loginResult.ok) {
