@@ -14,23 +14,12 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     // updateAge: <number>,
   },
   callbacks: {
-    async signIn({ user, account }) {
-      console.log(`called signIn({ user, account })`);
-
-      if (["google", "github"].includes(account?.provider as string)) {
-        return true;
-      }
-      return true;
-    },
-
     async jwt({ token, user }) {
-      console.log(`called session({ token, user })`);
-
       const now = Math.floor(Date.now() / 1000);
 
-      if (user) {
+      if (user) { 
         token.issuedAt = now;
-        // ...
+        token.user = user;
       }
 
       const tokenAge = now - (token.issuedAt as number ?? 0); 
@@ -40,9 +29,11 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     },
 
     async session({ session, token }) {
-      console.log(`called session({ session, token })`);
+      if (token) {
+        session.user.name = token.name as string;
+        session.user.email = token.email as string;
+      }
       return session;
     },
-    
   },
 });
