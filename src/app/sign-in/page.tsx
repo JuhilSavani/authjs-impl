@@ -13,10 +13,9 @@ import { getUserByEmail } from "@/app/actions/user.actions";
 import { login } from "@/app/actions/auth.actions";
 
 export default function SignInPage() {
-  const form = useForm<SignInCredentials>({
+  const { register, handleSubmit, formState } = useForm<SignInCredentials>({
     resolver: zodResolver(SignInSchema),
   });
-  const { register, handleSubmit, formState } = form;
   const { errors } = formState;
 
   const router = useRouter();
@@ -27,7 +26,7 @@ export default function SignInPage() {
 
     if (getUserResult.ok) {
       if(
-        (getUserResult.user!.provider === "credentials" && getUserResult.user!.isVerified) || 
+        (getUserResult.user!.provider === "credentials" && getUserResult.user!.emailVerified) || 
         (getUserResult.user!.provider !== "credentials" && getUserResult.user!.password)
       ){
         const loginResult = await login(formData);

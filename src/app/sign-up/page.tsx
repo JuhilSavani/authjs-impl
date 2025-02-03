@@ -12,10 +12,9 @@ import { useRouter } from "next/navigation";
 import { getUserByEmail } from "@/app/actions/user.actions";
 
 export default function SignUpPage() {
-  const form = useForm<SignUpCredentials>({
+  const { register, handleSubmit, formState } = useForm<SignUpCredentials>({
     resolver: zodResolver(SignUpSchema),
   });
-  const { register, handleSubmit, formState } = form;
   const { errors } = formState;
 
    const router = useRouter();
