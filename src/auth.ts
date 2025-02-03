@@ -15,7 +15,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     // updateAge: <number>,
   },
   callbacks: {
-    async signIn({ user, account }) {
+    async signIn({ user, account }) { // INFO: user depends on what is return as profile by the provider
       if (["google", "github"].includes(account?.provider as string)) {
         const [firstName, lastName] = (user?.name?.split(' ') ?? ["", ""]);
         try {
@@ -25,7 +25,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
               firstName,
               lastName,
               email: user?.email as string,
-              isVerified: true,
+              emailVerified: new Date(),
               provider: account?.provider as "google" | "github",
             });
             if(saveUserResult.ok) return true;

@@ -5,6 +5,7 @@ import { NextRequest, NextResponse } from "next/server";
 export async function POST(request: NextRequest){
   try {
     const reqBody = await request.json();
+    if(reqBody.emailVerified) reqBody.emailVerified = new Date(reqBody.emailVerified);
     await db.insert(users).values(reqBody);
     return NextResponse.json({ message: "User details stored successfully" }, { status: 200 });
   } catch (error) {

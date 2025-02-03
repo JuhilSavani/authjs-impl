@@ -7,11 +7,25 @@ import { MdEmail } from 'react-icons/md';
 import { useRouter, useSearchParams } from "next/navigation";
 import { SignInSchema, SignUpSchema } from "@/lib/schemas";
 import { SignInCredentials, SignUpCredentials } from "@types";
-import { updateUserPassword } from "@/app/actions/user.actions";
+import { updateUserDetails } from "@/app/actions/user.actions";
 import { getTokenAndSendEmail } from "@/app/actions/verification.actions";
 import { login, register } from "@/app/actions/auth.actions";
+import { Suspense } from "react";
+import { Loader } from "lucide-react";
 
-function EmailVerificationPage() {
+export default function EmailVerificationPage() {
+  return (
+    <Suspense fallback={
+      <p className="flex justify-center items-center h-screen">
+        <Loader className="loader" size={45}/>
+      </p>
+    }>
+      <Component />
+    </Suspense>
+  );
+}
+
+function Component() {
   const searchParams = useSearchParams();
   const referrer = searchParams.get("referrer") || "Unknown";
 
@@ -44,13 +58,19 @@ function EmailVerificationPage() {
       if (inputRef.current && token === inputRef.current.value) {
         if (referrer === "sign-in") {
           const credentials: SignInCredentials = await SignInSchema.parseAsync(formResponse);
-          await updateUserPassword(credentials.email, credentials.password);
+          await updateUserDetails({ 
+            email: credentials.email as string, 
+            detailsToUpdate: {
+              emailVerified: new Date(),
+              password: credentials.password as string
+            }
+          });
           const loginResult = await login(credentials);
           alert(loginResult.message);
           if (!loginResult.ok) return;
         } else {
           const credentials: SignUpCredentials = await SignUpSchema.parseAsync(formResponse);
-          const registerResult = await register({ credentials, isEmailVerified: true });
+          const registerResult = await register({ credentials, emailVerified: new Date() });
           alert(registerResult.message);
           if(!registerResult.ok) return;
         }
@@ -106,4 +126,3 @@ function EmailVerificationPage() {
   );
 }
 
-export default EmailVerificationPage;

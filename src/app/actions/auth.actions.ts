@@ -17,12 +17,12 @@ export async function login(credentials: SignInCredentials){
   }
 }
 
-export async function register({ credentials, isEmailVerified }: { credentials: SignUpCredentials, isEmailVerified: boolean }){
+export async function register({ credentials, emailVerified }: { credentials: SignUpCredentials, emailVerified: Date }){
   try {
     const response = await fetch(`${baseUrl}/api/auth/register`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ credentials, isEmailVerified })
+      body: JSON.stringify({ credentials, emailVerified })
     });
     const { message } = await response.json();
     if(!response.ok) return { ok: false, message };

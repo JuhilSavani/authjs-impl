@@ -1,13 +1,12 @@
-import { NextResponse } from 'next/server';
+import { NextResponse, NextRequest } from 'next/server';
 import { db } from '@/db';
 import { users } from '@/db/models';
 import { getUserByEmail } from '@/app/actions/user.actions'; 
-import { SignUpCredentials } from '@types';
 import bcrypt from 'bcryptjs';
 
-export async function POST(req: Request) {
+export async function POST(req: NextRequest) {
   try {
-    const { credentials, isEmailVerified }: { credentials: SignUpCredentials; isEmailVerified: boolean } = await req.json();
+    const { credentials, emailVerified } = await req.json();
 
     const getUserResult = await getUserByEmail(credentials.email);
     if (getUserResult.ok) {
@@ -19,12 +18,13 @@ export async function POST(req: Request) {
     await db.insert(users).values({
       ...credentials,
       password: hashedPassword,
-      isVerified: isEmailVerified,
+      emailVerified: new Date(emailVerified),
       provider: 'credentials',
     });
     
     return NextResponse.json({ message: 'Registered successfully!' }, { status: 201 });
   } catch (error) {
+    console.error('Error updating the password:', error);
     if (error instanceof Error) {
       return NextResponse.json({ message: error.message }, { status: 500 });
     }
