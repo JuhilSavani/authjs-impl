@@ -99,7 +99,37 @@
   @apply
   py-1 px-2 mb-2 
   text-left rounded-md 
-  border-4 border-[rgba(16,16,16,0.75)] 
-  transition-all duration-200 
-  hover:cursor-not-allowed hover:opacity-80
+  border-4 border-slate-700
+  hover:cursor-not-allowed 
+}
+
+.navbar ul{
+  @apply flex justify-between bg-white w-[500px] mx-auto my-4 px-8 py-2 rounded-sm
+}
+
+.page {
+  @apply
+  text-primary font-medium 
+}
+
+.page .container{
+  @apply
+  mx-auto px-12 py-8
+  h-[500px] w-[500px] 
+  bg-white rounded-sm
+}
+
+
+.loader{
+  @apply text-white;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
