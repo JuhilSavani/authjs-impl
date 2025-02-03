@@ -1,9 +1,9 @@
 
-export default function HomePage() {
+export default function SettingsPage() {
   return (
     <div className="page">
       <div className="container">
-        Home Page
+        Settings Page
       </div>
     </div>
   )
