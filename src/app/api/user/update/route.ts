@@ -6,12 +6,16 @@ import bcrypt from 'bcryptjs';
 
 export async function PATCH(request: NextRequest){
   try {
-    const { email, newPassword }: { email: string; newPassword: string } = await request.json();
+    const { email, detailsToUpdate } = await request.json();
 
-    const hashedPassword = await bcrypt.hash(newPassword, 10);
-
+    if(detailsToUpdate.password)
+      detailsToUpdate.password = await bcrypt.hash(detailsToUpdate.password as string, 10);
+    
+    if (detailsToUpdate.emailVerified) // INFO: Due to JSON.stringify
+      detailsToUpdate.emailVerified = new Date(detailsToUpdate.emailVerified as string); 
+    
     // WARN: https://github.com/drizzle-team/drizzle-orm/issues/2472
-    await db.update(users).set({ password: hashedPassword }).where(eq(users.email, email));
+    await db.update(users).set(detailsToUpdate).where(eq(users.email, email as string));
 
     return NextResponse.json({ message: 'Password updated successfully!' }, { status: 200 });
   } catch (error) {
