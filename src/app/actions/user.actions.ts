@@ -15,11 +15,11 @@ export async function getUserByEmail(email: string){
 }
 
 export async function saveUserDetails(data: { 
-  firstName: string, 
-  lastName: string, 
-  email: string, 
-  isVerified: boolean, 
-  provider: "google" | "github" 
+  firstName: string; 
+  lastName: string;
+  email: string;
+  emailVerified: Date; 
+  provider: "google" | "github";
 }) {
   try {
     const response = await fetch(`${baseUrl}/api/user`, {
@@ -36,12 +36,20 @@ export async function saveUserDetails(data: {
   }
 }
 
-export async function updateUserPassword(email: string, newPassword: string) {
+export async function updateUserDetails({ email, detailsToUpdate }: { 
+  email: string;
+  detailsToUpdate: {
+    firstName?: string;
+    lastName?: string;
+    emailVerified?: Date;
+    password?: string;
+  } 
+}) {
   try {
-    const response = await fetch(`${baseUrl}/api/user/update/password`, {
+    const response = await fetch(`${baseUrl}/api/user/update`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, newPassword }),
+      body: JSON.stringify({ email, detailsToUpdate }),
     });
     const { message } = await response.json();
     if(response.ok) return { ok: true, message };
